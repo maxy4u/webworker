@@ -1,0 +1,37 @@
+<!DOCTYPe html>
+<html ng-app="app">
+	<body ng-controller="MyCtrl">
+		<p ng-bind="name"></p><br>
+		<button type="button" ng-click="getWorkerWorking()">Change Name</button>
+	</body>
+	<script src="angular.js"></script>
+	<script>
+	angular.module('app',[])
+	.factory('MyWorker',['$q',function($q){
+		var worker = new Worker('myWorker.js');
+		var defer = $q.defer();
+		worker.addEventListener('message',function(e){
+			console.log('Worker said' , e.data);
+			defer.resolve(e.data)
+		},false)
+		return {
+			doWork:function(myData){
+				defer = $q.defer();
+				worker.postMessage(myData);
+				return defer.promise;
+			}
+		}	
+	}])
+	.controller('MyCtrl',['$scope','MyWorker',function($scope,MyWorker){
+		console.log('controller');
+		$scope.name = 'gaurav';
+		$scope.getWorkerWorking = function(){
+		    console.log('called')
+			MyWorker.doWork($scope.name).then(function(data){
+				$scope.name = data;
+			})
+		}
+	}])
+	
+	</script>
+</html>

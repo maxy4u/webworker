@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Shared Workers Test Page #1</title>
+    <script>
+      var worker;
+			
+      function start() {
+        worker = new SharedWorker('pi_shared.js');
+        worker.port.addEventListener("message", function(e) {  
+          var data = e.data;
+          var result = document.getElementById("result");
+          if (data.FinalPiValue) {
+            result.innerHTML += data.FinalPiValue + ' (final)';
+          } else if (data.value) {
+    	      console.log('Page 1 received message: '+data.value);  
+          }
+        }, false);  
+        worker.port.start();  
+        // post a message to the shared web worker  
+        console.log("Calling the worker from page 1");
+        worker.port.postMessage({cmd: 'connect', id: "Page 1"});
+        //set the iframe page
+        document.getElementById("inner").src = 'SharedWorkersTestPage2.html';
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Shared Workers Test Page #1</h1>
+    <article>
+      <input type="button" onclick="start()" value="Calculate Pi" />
+      <br/>
+      <br/>
+      <div id="result"></div>
+      <br/>
+      <iframe id="inner" style="width:600px; height:300px" src=""></iframe>
+    </article>
+  </body>
+</html>

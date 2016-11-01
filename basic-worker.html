@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <title>Worker example: One-core computation</title>
+ </head>
+ <body>
+ <button type="button" onclick="getData()">Get Modified Data</button>
+  <p>We are sending this to Webworker <span id="init"> </span></p><br>
+  <p>Data we received from Webworker is <output id="result"></output></p>
+  <script>
+	var worker = new Worker('worker.js');
+   var data = {id:1,fname:'gaurav',lname:'Khurana'};
+   document.getElementById('init').innerHTML = JSON.stringify(data);
+   function getData(){
+	worker.postMessage(JSON.stringify(data));
+	worker.onmessage = function (event) {
+     document.getElementById('result').textContent = JSON.stringify(event.data);
+	};
+   }
+   
+  </script>
+ </body>
+</html>
